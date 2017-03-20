@@ -1,4 +1,11 @@
 var articlesService = (function () {
+    var filterConfig = {
+        createdAtFrom: new Date(),
+        createdAtTo: new Date(),
+        author: 'Атор',
+        tags: ['Теги'],
+
+    };
     var tags = ['Мебель', 'Кафе', 'Минск', 'Общежития', 'Ремонт — это просто', 'Флора и фауна', 'Lenovo', 'Motorola', 'Google', 'Умные часы',
         'Космос', 'Аварии', 'Общественный транспорт', 'Алкоголь', 'Минская область', 'Погоня', 'Происшествия', 'Конкурсы', 'Красота', 'Милиция', 'Метро', 'ТП', 'Психология', 'Семья'];
     var articles = [
@@ -23,6 +30,32 @@ var articlesService = (function () {
             createdAt: new Date(2017, 3, 5, 11, 55),
             author: 'Нестер Владислав',
             content: 'Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
+            'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
+            ' На распорядок движения поездов инцидент не повлиял.Происшествие случилось сегодня около десяти утра. Как рассказал нам пресс-секретарь метрополитена Андрей Кузьмин, плохо стало минчанину 1950 года рождения. ' +
             'Прибыла бригада скорой.Реанимационные меры принимались на протяжении получаса, после чего врачи вынуждены были констатировать смерть. Предварительный диагноз — внезапная остановка сердца.' +
             ' На распорядок движения поездов инцидент не повлиял.',
             tags: ['Метро', 'Минск', 'ТП'],
@@ -324,25 +357,31 @@ var articlesService = (function () {
         newArticles.sort(function (a, b) {
             return b.createdAt - a.createdAt;
         });
-        if (filterConfig != null) {
-            if (filterConfig.author != null) {
+        if (filterConfig !== undefined) {
+            if (filterConfig.author) {
                 newArticles = newArticles.filter(function (item) {
-                    return item.author == filterConfig.author
+                    return item.author === filterConfig.author
                 })
             }
-            if (filterConfig.createdAt != null) {
+            if (filterConfig.createdAtFrom) {
                 newArticles = newArticles.filter(function (item) {
-                    return item.createdAt >= filterConfig.createdAt
+                    return item.createdAt >= filterConfig.createdAtFrom
+                })
+            }
+            if (filterConfig.createdAtTo) {
+                newArticles = newArticles.filter(function (item) {
+                    return item.createdAt <= filterConfig.createdAtTo
                 })
             }
             if (filterConfig.tags != null) {
-                newArticles = newArticles.filter(function (item) {
-                    for (var i = 0; i < filterConfig.tags.length; i++) {
-                        if (item.tags.indexOf(filterConfig.tags[i]) == -1) {
-                            return false;
+                newArticles = newArticles.filter(function (article) {
+                    var check = true;
+                    filterConfig.tags.forEach(function (item) {
+                        if (article.tags.indexOf(item) == -1) {
+                            check = false;
                         }
-                    }
-                    return true;
+                    });
+                    return check;
                 })
             }
         }
@@ -350,7 +389,7 @@ var articlesService = (function () {
     }
 
     function getArticle(id) {
-        if (id != null) {
+        if (id !== undefined) {
             var article = articles.filter(function (item) {
                 return item.id == id;
             });
@@ -360,19 +399,21 @@ var articlesService = (function () {
 
     function validateArticle(article) {
         if (article != null) {
-            if (typeof article.id == 'string') {
-                if (typeof article.title == 'string' && article.title.length < 100)
-                    if (typeof article.summary == 'string' && article.summary.length < 200)
-                        if (typeof article.createdAt == 'object')
-                            if (typeof article.author == 'string' && article.author.length > 0)
-                                if (typeof article.content == 'string' && article.content.length > 0)
-                                    if (typeof article.tags == 'object' && article.tags.length > 0) {
-                                        for (var i = 0; i < article.tags.length; i++) {
-                                            if (tags.indexOf(article.tags[i]) == -1) {
+            if (typeof article.id === 'string') {
+                if (typeof article.title === 'string' && article.title.length < 100)
+                    if (typeof article.summary === 'string' && article.summary.length < 200)
+                        if (typeof article.createdAt === 'object')
+                            if (typeof article.author === 'string' && article.author.length > 0)
+                                if (typeof article.content === 'string' && article.content.length > 0)
+                                    if (typeof article.tags === 'object' && article.tags.length > 0) {
+                                        var check = true;
+                                        article.tags.forEach(function (item) {
+                                            if (tags.indexOf(item) == -1) {
+                                                check = false;
                                                 return false;
                                             }
-                                        }
-                                        return true;
+                                        });
+                                        return check;
                                     }
             }
         }
@@ -388,17 +429,18 @@ var articlesService = (function () {
     }
 
     function removeTag(tag) {
-        tag = tag || null;
-        var index = tags.indexOf(tag);
-        if (index != -1) {
-            tags.splice(index, 1);
-            return true;
+        if (!tag) {
+            var index = tags.indexOf(tag);
+            if (index != -1) {
+                tags.splice(index, 1);
+                return true;
+            }
         }
         return false;
     }
 
     function addArticle(article) {
-        if (article != null) {
+        if (!article) {
             if (validateArticle(article)) {
                 articles.push(article);
                 return true;
@@ -409,20 +451,17 @@ var articlesService = (function () {
 
     function editArticle(id, article) {
         if (getArticle(id).length != 0) {
-            for (var i = 0, len = articles.length; i < len; i++) {
-                if (articles[i].id == id) {
-                    var index = i;
-                    break;
-                }
-            }
-            if (article.id == null && article.author == null && article.createdAt == null) {
-                if (article.content != null && article.content.length > 0) {
+            var index = articles.findIndex(function (articles) {
+                return articles.id === id;
+            });
+            if (!article.id && !article.author && !article.createdAt) {
+                if (!article.content && article.content.length > 0) {
                     articles[index].content = article.content;
                 }
-                if (article.summary != null && article.summary.length < 200) {
+                if (!article.summary&& article.summary.length < 200) {
                     articles[index].summary = article.summary;
                 }
-                if (article.title != null && article.title.length < 100) {
+                if (!article.title && article.title.length < 100) {
                     articles[index].title = article.title;
                 }
                 return true;
@@ -432,14 +471,10 @@ var articlesService = (function () {
     }
 
     function removeArticle(id) {
-        if (getArticle(id).length != 0) {
-            index = -1;
-            for (var i = 0, len = articles.length; i < len; i++) {
-                if (articles[i].id == id) {
-                    index = i;
-                    break;
-                }
-            }
+        if (getArticle(id).length !== undefined) {
+            var index = articles.findIndex(function (articles) {
+                return articles.id == id;
+            });
             if (index != -1) {
                 articles.splice(index, 1);
                 return true;
@@ -483,7 +518,7 @@ var articleRenderer = (function () {
             ARTICLE_TEMPLATE_SMALL.content.querySelector('.edit-panel').style.visibility = "hidden";
         }
 
-        if(USER.length!=0) {
+        if (USER.length != 0) {
             var user = document.querySelector('.login');
             user.innerHTML = "Привет, " + USER;
         }
@@ -594,16 +629,104 @@ var articleRenderer = (function () {
         removeArticlesFromDom: removeArticlesFromDom,
         removeArticlesFromDomByID: removeArticlesFromDomByID,
         editByID: editByID,
-        showUserElements: showUserElements
+        showUserElements: showUserElements,
+        formatDate:formatDate
     }
 }());
+var pagination = (function () {
+    var ITEMS_PER_PAGE = 6;
+    var total;
+    var currentPage;
+    var showMoreButton;
+    var showMoreCallback;
 
-/*
- Функция startApp вызовется, когда браузер полностью загрузит и распарсит исходный HTML (index.html)
- DOMContentLoaded – означает, что все DOM-элементы разметки уже созданы,
- можно их искать, вешать обработчики, создавать интерфейс, но при этом, возможно,
- ещё не догрузились какие-то картинки или стили.
- */
+    function init(_total, _showMoreCallback) {
+        currentPage = 1;
+        total = _total;
+        showMoreCallback = _showMoreCallback;
+        showMoreButton = document.querySelector('.more-news');
+        showMoreButton.addEventListener('click', handleShowMoreClick);
+
+        /* Не показывать кнопку если статей нет */
+        showOrHideMoreButton();
+
+        /* Вернуть skip, top для начальной отрисовки статей */
+        return getParams();
+    }
+
+    function handleShowMoreClick() {
+        var paginationParams = nextPage();
+        showMoreCallback(paginationParams.skip, paginationParams.top);
+    }
+
+    function getTotalPages() {
+        return Math.ceil(total / ITEMS_PER_PAGE);
+    }
+
+    function nextPage() {
+        currentPage = currentPage + 1;
+        /* возможно, статей больше нет, спрятать кнопку */
+        showOrHideMoreButton();
+
+        return getParams();
+    }
+
+    function getParams() {
+        return {
+            top: ITEMS_PER_PAGE,
+            skip: (currentPage - 1) * ITEMS_PER_PAGE
+        };
+    }
+
+    function showOrHideMoreButton() {
+        if (getTotalPages() <= currentPage) {
+            showMoreButton.style.display = "none";
+        }
+    }
+
+    return {
+        init: init
+    }
+
+}());
+var fullNewsService = (function () {
+    var TEMPLATE_FULL;
+    var TOP_NEWS_CONTAINER;
+
+    function init() {
+        TEMPLATE_FULL = document.getElementById('template-full-news');
+        TOP_NEWS_CONTAINER = document.querySelector('.top-news-bar');
+        TOP_NEWS_CONTAINER.addEventListener('click', handleShowClick);
+    }
+
+    function handleShowClick(event) {
+        var target = event.target;
+        if (target.type != 'button')return;
+        while (!target.hasAttribute('data-id')) {
+            target = target.parentNode;
+        }
+        var id = target.getAttribute('data-id');
+        document.body.appendChild(renderFullNews(id));
+    }
+    function renderFullNews(id) {
+        var article = articlesService.getArticle(id);
+        var template = TEMPLATE_FULL;
+        template.content.querySelector('.top-image-full').style.backgroundImage = "url(" + article.picture + ")";
+        template.content.querySelector('.full-left').innerHTML = article.author;
+        var description = template.getElementsByClassName('full-right');
+        //description[0].innerHTML = articleRenderer.formatDate(article.createdAt);
+        //description[1].innerHTML.innerHTML = article.tags.toString();
+        template.content.querySelector('.title-full').innerHTML = "<h5>" + article.title + "</h5>";
+        template.content.querySelector('.content-full').textContent = article.content;
+        return template.content.querySelector('.full-news-wrapper').cloneNode(true);
+    }
+
+    return {
+        init: init,
+        renderFullNews:renderFullNews,
+    }
+
+}());
 document.addEventListener('DOMContentLoaded', startApp);
 
 
@@ -614,22 +737,24 @@ function startApp() {
     articleRenderer.showUserElements();
     /* Нарисуем статьи из массива GLOBAL_ARTICLES в DOM */
     var articlesTop = articlesService.getArticles(0, 3);
-    var articlesBot = articlesService.getArticles(3, 9);
     // 3. Отобразим статьи
     articleRenderer.insertArticlesInDOM(articlesTop, 'top');
-    articleRenderer.insertArticlesInDOM(articlesBot, 'bot');
+    var total = 20;
+    var paginationParams = pagination.init(total, function (skip, top) {
+        renderArticles(skip, top, undefined, 'bot');
+    });
+    renderArticles(paginationParams.skip, paginationParams.top, undefined, 'bot');
+    fullNewsService.init();
 
 }
 
 /* Глобальная Функция для проверки. Свяжет модель и отображения */
 function renderArticles(skip, top, filterConfig, place) {
     // 1. Удалим статьи из HTML
-    articleRenderer.removeArticlesFromDom();
+    // articleRenderer.removeArticlesFromDom();
 
     // 2. Достанем статьи из модели
     var articlesTop = articlesService.getArticles(skip, top, filterConfig);
     // 3. Отобразим статьи
     articleRenderer.insertArticlesInDOM(articlesTop, place);
 }
-
-
