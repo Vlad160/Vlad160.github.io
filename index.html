@@ -48,9 +48,9 @@
                     </select>
                 </div>
             </div>
-            <div class="add-news">
-                <button type="button" class="flat-button" id="add-button">Добавить новость</button>
-            </div>
+            <!--<div class="add-news">-->
+            <!--<button type="button" class="flat-button" id="add-button">Добавить новость</button>-->
+            <!--</div>-->
         </div>
         <div class="slideshow-container">
             <div class="slides fade">
@@ -114,6 +114,11 @@
             </div>
         </div>
     </div>
+    <div class="add-news-button" id="add-button">
+        <a>
+            <img src="images/add_news_medium.png">
+        </a>
+    </div>
     <div class="footer">
         <div class="footer_text">OpenNews(статьи украл с онлайнера)</div>
         <div class="footer_text">Владислав Нестер</div>
@@ -146,8 +151,8 @@
             <button type="button" class="flat_button_read">Читать</button>
         </div>
         <div class="edit-panel">
-            <img src="images/editing-pencil_24.png">
-            <img src="images/garbage_24.png">
+            <img src="images/editing-pencil_24.png" class="edit-news">
+            <img src="images/garbage_24.png" class="delete-news">
         </div>
 
     </div>
@@ -160,7 +165,7 @@
             </a></div>
         <div class="small-news">
             <div class="news-header-small">
-                <a href="" id="small-link">
+                <a href="https://google.com" id="small-link">
                     <h5>Заголовок</h5></a>
             </div>
             <div class="news-preview-small"><p>Краткое содержание.</p></div>
@@ -170,14 +175,14 @@
                 <span class="small-info">Автор</span>
             </div>
             <div class="edit-panel">
-                <img src="images/editing-pencil_24.png">
-                <img src="images/garbage_24.png">
+                <img src="images/editing-pencil_24.png" class="edit-news">
+                <img src="images/garbage_24.png" class="delete-news">
             </div>
         </div>
     </div>
 </template>
 <template id="template-full-news">
-    <div class="full-news-background">
+    <div class="news-background">
         <div class="full-news-wrapper">
             <div class="full-news">
                 <div class="top-image-full">
@@ -289,6 +294,22 @@
                     этому факту проводит и инспекция по труду.
                 </div>
             </div>
+        </div>
+    </div>
+</template>
+<template id="template-add-edit-news">
+    <div class="news-background">
+        <div class="add-edit-news-wrapper">
+            <div class="add-edit-news-invalid">Неверные данные!</div>
+            <form class="add-edit-news-form" id="add-news" name="add-news-form">
+                <input type="text" class="add-edit-news-field" placeholder="Ссылка на картинку">
+                <textarea class="add-edit-news-field add-title" placeholder="Заголовок"></textarea>
+                <textarea class="add-edit-news-field add-summary" placeholder="Краткое содержание"></textarea>
+                <textarea class="add-edit-news-field add-content" id="add-content-field"
+                          placeholder="Содержание новости"></textarea>
+            </form>
+            <button type="button" form="add-news" class="flat-button add-news-button-form" id="add-news-submit">Добавить!
+            </button>
         </div>
     </div>
 </template>

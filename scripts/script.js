@@ -4,8 +4,60 @@ var articlesService = (function () {
         createdAtTo: new Date(),
         author: 'Атор',
         tags: ['Теги'],
-
     }; //я не знаю, но без этого говорит, что в филтрконфиге отсутствуют поля
+    var articleMap = {
+        id: function (id) {
+            if (!id) return true;
+            return typeof id === 'string';
+        },
+        title: function (title) {
+            if (title) {
+                return title.length < 100;
+            }
+            return false;
+
+        },
+        summary: function (summary) {
+            if (summary) {
+                return summary.length < 200;
+            }
+            return false;
+        },
+        author: function (author) {
+            if (!author) return true;
+            return author.length > 0;
+
+        },
+        content: function (content) {
+            if (content) {
+                return content.length < 800;
+            }
+            return false;
+        },
+        tags: function (tag) {
+            if (tag) {
+                if (tag.length > 0) {
+                    var check = true;
+                    tag.forEach(function (item) {
+                        if (tags.indexOf(item) == -1) {
+                            check = false;
+                            return false;
+                        }
+                    });
+                    return check;
+                }
+            }
+            return false;
+        },
+        picture: function (picture) {
+            if (picture) {
+                return picture.length > 0;
+            }
+            return false;
+        }
+
+
+    };
     var tags = ['Мебель', 'Кафе', 'Минск', 'Общежития', 'Ремонт — это просто', 'Флора и фауна', 'Lenovo', 'Motorola', 'Google', 'Умные часы',
         'Космос', 'Аварии', 'Общественный транспорт', 'Алкоголь', 'Минская область', 'Погоня', 'Происшествия', 'Конкурсы', 'Красота', 'Милиция', 'Метро', 'ТП', 'Психология', 'Семья'];
     var articles = [
@@ -373,7 +425,7 @@ var articlesService = (function () {
                     return item.createdAt <= filterConfig.createdAtTo
                 })
             }
-            if (filterConfig.tags != null) {
+            if (filterConfig.tags.length > 0) {
                 newArticles = newArticles.filter(function (article) {
                     var check = true;
                     filterConfig.tags.forEach(function (item) {
@@ -397,29 +449,26 @@ var articlesService = (function () {
         }
     }
 
+    function getArticleIndexByID(id) {
+        if (getArticle(id).length != 0) {
+            var index = articles.findIndex(function (articles) {
+                return articles.id === id;
+            });
+            return index;
+        }
+        return -1;
+    }
+
     function validateArticle(article) {
-        if (article != null) {
-            if (typeof article.id === 'string') {
-                if (typeof article.title === 'string' && article.title.length < 100)
-                    if (typeof article.summary === 'string' && article.summary.length < 200)
-                        if (typeof article.createdAt === 'object')
-                            if (typeof article.author === 'string' && article.author.length > 0)
-                                if (typeof article.content === 'string' && article.content.length > 0)
-                                    if (typeof article.tags === 'object' && article.tags.length > 0) {
-                                        var check = true;
-                                        article.tags.forEach(function (item) {
-                                            if (tags.indexOf(item) == -1) {
-                                                check = false;
-                                                return false;
-                                            }
-                                        });
-                                        return check;
-                                    }
-            }
+        if (article !== undefined) {
+            var check = Object.keys(articleMap).every(function (item) {
+                return articleMap[item](article[item]);
+            });
+            return check;
         }
         return false;
 
-    }
+    } //АНТОН НЕ КОПИРУЙ ЭТО.ТУТ СЛОЖНОСТИ БОЛЬШЕ ЧЕМ В ЛЮБОЙ ТВОЕ ЛАБЕ
 
     function addTag(tag) {
         tag = tag || null;
@@ -440,7 +489,7 @@ var articlesService = (function () {
     }
 
     function addArticle(article) {
-        if (!article) {
+        if (article) {
             if (validateArticle(article)) {
                 articles.push(article);
                 return true;
@@ -451,19 +500,12 @@ var articlesService = (function () {
 
     function editArticle(id, article) {
         if (getArticle(id).length != 0) {
-            var index = articles.findIndex(function (articles) {
-                return articles.id === id;
-            });
-            if (!article.id && !article.author && !article.createdAt) {
-                if (!article.content && article.content.length > 0) {
-                    articles[index].content = article.content;
-                }
-                if (!article.summary&& article.summary.length < 200) {
-                    articles[index].summary = article.summary;
-                }
-                if (!article.title && article.title.length < 100) {
-                    articles[index].title = article.title;
-                }
+            var index = getArticleIndexByID(id);
+            article.tags = articles[index].tags;
+            if (validateArticle(article) && !article.id && !article.createdAt && !article.author) {
+                articles[index].content = article.content;
+                articles[index].summary = article.summary;
+                articles[index].title = article.title;
                 return true;
             }
         }
@@ -472,15 +514,17 @@ var articlesService = (function () {
 
     function removeArticle(id) {
         if (getArticle(id).length !== undefined) {
-            var index = articles.findIndex(function (articles) {
-                return articles.id == id;
-            });
+            var index = getArticleIndexByID(id);
             if (index != -1) {
                 articles.splice(index, 1);
                 return true;
             }
         }
         return false;
+    }
+
+    function getArticlesSize() {
+        return articles.length;
     }
 
     return {
@@ -491,7 +535,8 @@ var articlesService = (function () {
         removeTag: removeTag,
         addArticle: addArticle,
         editArticle: editArticle,
-        removeArticle: removeArticle
+        removeArticle: removeArticle,
+        getArticlesSize: getArticlesSize
     };
 }());
 var articleRenderer = (function () {
@@ -499,11 +544,10 @@ var articleRenderer = (function () {
     var ARTICLE_LIST_NODE_TOP;
     var ARTICLE_TEMPLATE_SMALL;
     var ARTICLE_LIST_NODE_BOT;
-    var USER = "";
+    var USER = "D";
 
     function init() {
-        /* DOM Загрузился.
-         Можно найти в нем нужные элементы и сохранить в переменные */
+
         ARTICLE_TEMPLATE_BIG = document.querySelector('#template-article-top');
         ARTICLE_LIST_NODE_TOP = document.querySelector('.top-news-bar');
         ARTICLE_TEMPLATE_SMALL = document.querySelector('#template-article-bot');
@@ -531,64 +575,70 @@ var articleRenderer = (function () {
                 ARTICLE_LIST_NODE_TOP.appendChild(node);
             });
         }
-        /* для массива объектов статей получим соотвествующие HTML элементы */
+
         if (place.toLowerCase() == 'bot') {
             var articlesNodesBot = renderArticles(articles, 'bot');
-            /* вставим HTML элементы в '.article-list' элемент в DOM. */
-
+            
             articlesNodesBot.forEach(function (node) {
                 ARTICLE_LIST_NODE_BOT.appendChild(node);
             });
         }
 
     }
-
+    function insertArticleInDOM(article,place) {
+        
+    }
     function removeArticlesFromDom() {
         ARTICLE_LIST_NODE_TOP.innerHTML = '';
         ARTICLE_LIST_NODE_BOT.innerHTML = '';
     }
 
+    function findNodeByID(Node, id) {
+        var searchIndex = -1;
+        [].forEach.call(Node.children, function (child, i) {
+            if (child.getAttribute('data-id') === id) {
+                searchIndex = i;
+            }
+        });
+        return searchIndex;
+
+    }
+
     function removeArticlesFromDomByID(id) {
-        for (var i = 0; i < ARTICLE_LIST_NODE_TOP.children.length; i++) {
-            if (ARTICLE_LIST_NODE_TOP.children[i].getAttribute('data-id') == id) {
-                ARTICLE_LIST_NODE_TOP.removeChild(ARTICLE_LIST_NODE_TOP.children[i]);
-            }
+        var idx = findNodeByID(ARTICLE_LIST_NODE_TOP, id);
+        if (idx != -1) {
+            ARTICLE_LIST_NODE_TOP.removeChild(ARTICLE_LIST_NODE_TOP.children[idx]);
         }
-        for (var i = 0; i < ARTICLE_LIST_NODE_BOT.children.length; i++) {
-            if (ARTICLE_LIST_NODE_BOT.children[i].getAttribute('data-id') == id) {
-                ARTICLE_LIST_NODE_BOT.removeChild(ARTICLE_LIST_NODE_BOT.children[i]);
-            }
+        var idx = findNodeByID(ARTICLE_LIST_NODE_BOT, id);
+        if (idx != -1) {
+            ARTICLE_LIST_NODE_BOT.removeChild(ARTICLE_LIST_NODE_BOT.children[idx]);
         }
     }
 
     function editByID(id, article) {
         articlesService.editArticle(id, article);
-        for (var i = 0; i < ARTICLE_LIST_NODE_TOP.children.length; i++) {
-            if (ARTICLE_LIST_NODE_TOP.children[i].getAttribute('data-id') == id) {
-                var insert = renderArticle(articlesService.getArticle(id), 'top');
-                ARTICLE_LIST_NODE_TOP.replaceChild(insert, ARTICLE_LIST_NODE_TOP.children[i]);
-            }
+        var idx = findNodeByID(ARTICLE_LIST_NODE_TOP, id);
+
+        if (idx != -1) {
+            var insert = renderArticle(articlesService.getArticle(id), 'top');
+            ARTICLE_LIST_NODE_TOP.replaceChild(insert, ARTICLE_LIST_NODE_TOP.children[idx]);
         }
-        for (var i = 0; i < ARTICLE_LIST_NODE_BOT.children.length; i++) {
-            if (ARTICLE_LIST_NODE_BOT.children[i].getAttribute('data-id') == id) {
-                var insert = renderArticle(articlesService.getArticle(id), 'bot');
-                ARTICLE_LIST_NODE_TOP.replaceChild(insert, ARTICLE_LIST_NODE_BOT.children[i]);
-            }
+        var idx = findNodeByID(ARTICLE_LIST_NODE_BOT, id);
+        if (idx != -1) {
+            var insert = renderArticle(articlesService.getArticle(id), 'bot');
+            ARTICLE_LIST_NODE_BOT.replaceChild(insert, ARTICLE_LIST_NODE_BOT.children[idx]);
         }
     }
 
     function renderArticles(articles, place) {
-        /* каждый объект article из массива преобразуем в HTML элемент */
+
         return articles.map(function (article) {
             return renderArticle(article, place);
         });
     }
 
     function renderArticle(article, place) {
-        /*
-         Используем template из DOM, заполним его данными конкретной статьи - article.
-         Этот код можно сделать лучше ...
-         */
+
         if (place.toLowerCase() == 'top') {
             var template = ARTICLE_TEMPLATE_BIG;
             template.content.querySelector('.top-news-wrapper').dataset.id = article.id;
@@ -598,15 +648,13 @@ var articleRenderer = (function () {
             template.content.querySelector('.news-big-date').textContent = formatDate(article.createdAt);
             template.content.getElementById('big-image').src = article.picture;
             template.content.querySelector('.news-tag').textContent = article.tags[0];
-            /*
-             Склонируем полученный контент из template и вернем как результат
-             */
+
             return template.content.querySelector('.top-news-wrapper').cloneNode(true);
         }
         if (place.toLowerCase() == 'bot') {
             var template = ARTICLE_TEMPLATE_SMALL;
             template.content.querySelector('.bottom-news-wrapper').dataset.id = article.id;
-            template.content.querySelector('.news-header-small').innerHTML = "<h5>" + article.title + "</h5>";
+            template.content.querySelector('.news-header-small').innerHTML = "<a><h5>" + article.title + "</h5></a>";
             template.content.querySelector('.news-preview-small').innerHTML = "<p>" + article.summary + "</p>";
             var smallInfo = template.content.querySelector('.news-info-small').getElementsByTagName('span');
             smallInfo[0].textContent = article.tags;
@@ -616,8 +664,7 @@ var articleRenderer = (function () {
             return template.content.querySelector('.bottom-news-wrapper').cloneNode(true);
         }
     }
-
-    /* Date -> 16/05/2015 09:50 */
+    
     function formatDate(d) {
         return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() + ' ' +
             d.getHours() + ':' + d.getMinutes();
@@ -630,7 +677,7 @@ var articleRenderer = (function () {
         removeArticlesFromDomByID: removeArticlesFromDomByID,
         editByID: editByID,
         showUserElements: showUserElements,
-        formatDate:formatDate
+        formatDate: formatDate
     }
 }());
 var pagination = (function () {
@@ -647,10 +694,10 @@ var pagination = (function () {
         showMoreButton = document.querySelector('.more-news');
         showMoreButton.addEventListener('click', handleShowMoreClick);
 
-        /* Не показывать кнопку если статей нет */
+
         showOrHideMoreButton();
 
-        /* Вернуть skip, top для начальной отрисовки статей */
+
         return getParams();
     }
 
@@ -665,7 +712,7 @@ var pagination = (function () {
 
     function nextPage() {
         currentPage = currentPage + 1;
-        /* возможно, статей больше нет, спрятать кнопку */
+
         showOrHideMoreButton();
 
         return getParams();
@@ -694,42 +741,156 @@ var fullNewsService = (function () {
     var TOP_NEWS_CONTAINER;
     var BOTTOM_NEWS_CONTAINER;
     var TEMPLATE_FULL_BACKGROUND;
+    var TEMPLATE_EDIT_ADD;
+    var ADD_NEWS_BUTTON;
+    var contentArea;
+    var submitButton;
+    var maxHeight = 450;
+    var addArticle = {};
 
     function init() {
         TEMPLATE_FULL = document.getElementById('template-full-news');
         TOP_NEWS_CONTAINER = document.querySelector('.top-news-bar');
         BOTTOM_NEWS_CONTAINER = document.querySelector('.bottom-news-bar');
-        TOP_NEWS_CONTAINER.addEventListener('click', handleShowClickTop);
-        BOTTOM_NEWS_CONTAINER.addEventListener('click',handleShowClickBot);
+        TOP_NEWS_CONTAINER.addEventListener('click', handleShowClick);
+        BOTTOM_NEWS_CONTAINER.addEventListener('click', handleShowClick);
+        TEMPLATE_EDIT_ADD = document.getElementById('template-add-edit-news');
+        ADD_NEWS_BUTTON = document.getElementById('add-button');
+        ADD_NEWS_BUTTON.addEventListener('click', handleAddNewsClick);
     }
 
-    function handleShowClickTop(event) {
+    function handleShowClick(event) {
         var target = event.target;
-        if (target.type != 'button')return;
-        while (!target.hasAttribute('data-id')) {
-            target = target.parentNode;
+        if (target.type === 'button') {
+            openFullNews(target);
+            removeFullNews();
         }
-        var id = target.getAttribute('data-id');
-        document.body.appendChild(renderFullNews(id));
-        removeFullNews();
+        if (target.className === 'delete-news') {
+            deleteNews(target);
+        }
+        if (target.className === 'edit-news') {
+            editNews(target);
+            removeFullNews();
+        }
+        if (target.tagName.toLocaleLowerCase() === 'h5') {
+            openFullNews(target);
+            removeFullNews();
+        }
     }
-    function handleShowClickBot(event) {
-        var target = event.target;
-        while (!target.hasAttribute('data-id')) {
-            target = target.parentNode;
-        }
-        var id = target.getAttribute('data-id');
-        document.body.appendChild(renderFullNews(id));
-        removeFullNews();
 
+    function handleAddNewsClick() {
+        openEditAdd();
+        removeFullNews();
+        addNews();
     }
-    function removeFullNews() {
-        TEMPLATE_FULL_BACKGROUND = document.querySelector('.full-news-background');
-        TEMPLATE_FULL_BACKGROUND.addEventListener('click',handleRemoveFull);
+
+    function editNews(node) {
+        while (!node.hasAttribute('data-id')) {
+            node = node.parentNode;
+        }
+        var id = node.getAttribute('data-id');
+        openEditAdd(id);
+        contentArea = document.getElementById('add-content-field');
+        contentArea.addEventListener('keydown', handleContentResize);
+        submitButton = document.getElementById('add-news-submit');
+        submitButton.addEventListener('click', handleSubmitNews);
     }
-    function handleRemoveFull() {
+
+    function addNews() {
+        contentArea = document.getElementById('add-content-field');
+        contentArea.addEventListener('keydown', handleContentResize);
+        submitButton = document.getElementById('add-news-submit');
+        submitButton.addEventListener('click', handleSubmitNews);
+    }
+
+    function handleSubmitNews() {
+        if (validateAddFrom()) {
+            removeAddEditForm();
+        }
+        else {
+            document.querySelector('.add-edit-news-invalid').style.visibility = 'visible';
+        }
+    }
+
+    function removeAddEditForm() {
         TEMPLATE_FULL_BACKGROUND.remove();
     }
+
+    function handleContentResize() {
+        function resize() {
+            contentArea.style.height = 'auto';
+            if (contentArea.scrollHeight > maxHeight) {
+                contentArea.style.height = maxHeight.toString() + 'px';
+            }
+            else {
+                contentArea.style.height = contentArea.scrollHeight + 'px';
+            }
+        }
+
+        function delayedResize() {
+            window.setTimeout(resize, 0);
+        }
+
+        contentArea.focus();
+        if (contentArea.offsetHeight < maxHeight) {
+            resize();
+        }
+    }
+
+    function validateAddFrom() {
+        var form = document.forms[0];
+        addArticle['picture'] = form.elements[0].value;
+        addArticle['title'] = form.elements[1].value;
+        addArticle['summary'] = form.elements[2].value;
+        addArticle['content'] = form.elements[3].value;
+        addArticle['tags'] = ['Минск'];
+        addArticle['id'] = articlesService.getArticlesSize().toString();
+        addArticle['createdAd'] = new Date();
+        if (articlesService.addArticle(addArticle)) {
+            return true;
+        }
+        return false;
+    }
+
+    function deleteNews(node) {
+        while (!node.hasAttribute('data-id')) {
+            node = node.parentNode;
+        }
+        var id = node.getAttribute('data-id');
+        articleRenderer.removeArticlesFromDomByID(id);
+
+    }
+
+    function openFullNews(node) {
+        while (!node.hasAttribute('data-id')) {
+            node = node.parentNode;
+        }
+        var id = node.getAttribute('data-id');
+        document.body.appendChild(renderFullNews(id));
+    }
+
+    function openEditAdd(id) {
+        document.body.appendChild(renderAddEditNews(id));
+    }
+
+    function removeFullNews() {
+        TEMPLATE_FULL_BACKGROUND = document.querySelector('.news-background');
+        TEMPLATE_FULL_BACKGROUND.addEventListener('click', handleRemoveFull);
+    }
+
+    function handleRemoveFull(event) {
+        if (event.target != TEMPLATE_FULL_BACKGROUND)return;
+        var child = event.target;
+        child = child.children[0];
+        var isRemove = true;
+        if (child.className === 'add-edit-news-wrapper') {
+            isRemove = confirm('Отменить создание?')
+        }
+        if (isRemove) {
+            TEMPLATE_FULL_BACKGROUND.remove();
+        }
+    }
+
     function renderFullNews(id) {
         var article = articlesService.getArticle(id);
         var template = TEMPLATE_FULL;
@@ -740,12 +901,29 @@ var fullNewsService = (function () {
         description[2].innerHTML = article.tags.toString();
         template.content.querySelector('.title-full').innerHTML = "<h5>" + article.title + "</h5>";
         template.content.querySelector('.content-full').textContent = article.content;
-        return template.content.querySelector('.full-news-background').cloneNode(true);
+        return template.content.querySelector('.news-background').cloneNode(true);
+    }
+
+    function renderAddEditNews(id) {
+        var template = TEMPLATE_EDIT_ADD;
+        if (!id) {
+            return template.content.querySelector('.news-background').cloneNode(true);
+        }
+        if (id) {
+            var article = articlesService.getArticle(id);
+            var form = template.content.querySelector('.add-edit-news-form');
+            form.elements[0].value = article.picture;
+            form.elements[1].value = article.title;
+            form.elements[2].value = article.summary;
+            form.elements[3].value = article.content;
+            // addArticle['tags'] = ['Минск'];
+            return template.content.querySelector('.news-background').cloneNode(true);
+        }
     }
 
     return {
         init: init,
-        renderFullNews:renderFullNews,
+        renderFullNews: renderFullNews,
     }
 
 }());
@@ -753,13 +931,12 @@ document.addEventListener('DOMContentLoaded', startApp);
 
 
 function startApp() {
-    /* DOM Загрузился.
-     Можно найти в нем нужные элементы и сохранить в переменные */
+
     articleRenderer.init();
     articleRenderer.showUserElements();
-    /* Нарисуем статьи из массива GLOBAL_ARTICLES в DOM */
+
     var articlesTop = articlesService.getArticles(0, 3);
-    // 3. Отобразим статьи
+
     articleRenderer.insertArticlesInDOM(articlesTop, 'top');
     var total = 20;
     var paginationParams = pagination.init(total, function (skip, top) {
@@ -770,13 +947,8 @@ function startApp() {
 
 }
 
-/* Глобальная Функция для проверки. Свяжет модель и отображения */
-function renderArticles(skip, top, filterConfig, place) {
-    // 1. Удалим статьи из HTML
-    // articleRenderer.removeArticlesFromDom();
 
-    // 2. Достанем статьи из модели
+function renderArticles(skip, top, filterConfig, place) {
     var articlesTop = articlesService.getArticles(skip, top, filterConfig);
-    // 3. Отобразим статьи
     articleRenderer.insertArticlesInDOM(articlesTop, place);
 }
