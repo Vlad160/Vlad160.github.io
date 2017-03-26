@@ -471,14 +471,15 @@ var articlesService = (function () {
     } //АНТОН НЕ КОПИРУЙ ЭТО.ТУТ СЛОЖНОСТИ БОЛЬШЕ ЧЕМ В ЛЮБОЙ ТВОЕ ЛАБЕ
 
     function addTag(tag) {
-        tag = tag || null;
-        if (tags.indexOf(tag) == -1) {
-            tags.push(tag);
+        if (tag) {
+            if (tags.indexOf(tag) == -1) {
+                tags.push(tag);
+            }
         }
     }
 
     function removeTag(tag) {
-        if (!tag) {
+        if (tag) {
             var index = tags.indexOf(tag);
             if (index != -1) {
                 tags.splice(index, 1);
@@ -491,9 +492,10 @@ var articlesService = (function () {
     function addArticle(article) {
         if (article) {
             if (validateArticle(article)) {
-                article.id = getArticlesSize().toString();
+                var size = getArticlesSize().toString() + 1;
+                article.id = size.toString();
                 article.createdAt = new Date();
-                article.author = 'Владислав Нестер';
+                article.author = userService.getUsername();
                 articles.push(article);
                 return true;
             }
@@ -547,7 +549,6 @@ var articleRenderer = (function () {
     var ARTICLE_LIST_NODE_TOP;
     var ARTICLE_TEMPLATE_SMALL;
     var ARTICLE_LIST_NODE_BOT;
-    var USER = "D";
     const MAX_ARTICLES_TOP = 3;
     const MAX_ARTICLES_BOT = 6;
 
@@ -560,16 +561,25 @@ var articleRenderer = (function () {
     }
 
     function showUserElements() {
-        if (USER.length == 0) {
-            var button = document.getElementById('add-button');
+        var editButtons = document.getElementsByClassName('edit-panel');
+        var button = document.getElementById('add-button');
+        var user = document.querySelector('.login');
+        if (userService.getUsername().length == 0) {
+            user.innerHTML = "Вход";
             button.style.visibility = "hidden";
-            ARTICLE_TEMPLATE_BIG.content.querySelector('.edit-panel').style.visibility = "hidden";
-            ARTICLE_TEMPLATE_SMALL.content.querySelector('.edit-panel').style.visibility = "hidden";
-        }
 
-        if (USER.length != 0) {
-            var user = document.querySelector('.login');
-            user.innerHTML = "Привет, " + USER;
+            [].forEach.call(editButtons, function (item) {
+                item.style.visibility = "hidden"
+            });
+        }
+        if (userService.getUsername().length != 0) {
+
+            user.innerHTML = "Привет, " + userService.getUsername();
+            [].forEach.call(editButtons, function (item) {
+                item.style.visibility = "visible"
+            });
+            button.style.visibility = "visible";
+
         }
     }
 
@@ -872,7 +882,7 @@ var fullNewsService = (function () {
 
     function collectData() {
         var addArticle = {};
-        var form = document.forms[0];
+        var form = document.forms.addNewsForm;
         addArticle['picture'] = form.elements[0].value;
         addArticle['title'] = form.elements[1].value;
         addArticle['summary'] = form.elements[2].value;
@@ -887,12 +897,10 @@ var fullNewsService = (function () {
     function renderAddEditNews(id) {
         var template = TEMPLATE_EDIT_ADD;
         if (!id) {
-            // template.content.querySelector('.add-edit-news-wrapper').dataset.id = articlesService.getArticlesSize().toString();
             return template.content.querySelector('.news-background').cloneNode(true);
         }
         if (id) {
             var article = articlesService.getArticle(id);
-            // template.content.querySelector('.add-edit-news-wrapper').dataset.id = article.id;
             var form = template.content.querySelector('.add-edit-news-form');
             form.elements[0].value = article.picture;
             form.elements[1].value = article.title;
@@ -925,6 +933,7 @@ var fullNewsService = (function () {
     /*Add News*/
     function handleAddNewsClick() {
         openEditAdd();
+        clearForms();
         removeAddEditForm();
         addNews();
     }
@@ -938,11 +947,12 @@ var fullNewsService = (function () {
 
     function handleContentResize() {
         function resize() {
-            contentArea.style.height = 'auto';
+
             if (contentArea.scrollHeight > maxHeight) {
                 contentArea.style.height = maxHeight.toString() + 'px';
             }
             else {
+                contentArea.style.height = 'auto';
                 contentArea.style.height = contentArea.scrollHeight + 'px';
             }
         }
@@ -960,10 +970,10 @@ var fullNewsService = (function () {
     function handleAddNewsSubmit() {
         var article = collectData();
         article['tags'] = ['Минск'];
-        if(articlesService.validateArticle(article)){
+        if (articlesService.validateArticle(article)) {
             articlesService.addArticle(article);
-            articleRenderer.insertArticleInDOM(article,'top');
-            articleRenderer.insertArticleInDOM(article,'bot');
+            articleRenderer.insertArticleInDOM(article, 'top');
+            articleRenderer.insertArticleInDOM(article, 'bot');
             TEMPLATE_FULL_BACKGROUND.remove();
         }
         else {
@@ -982,7 +992,7 @@ var fullNewsService = (function () {
     }
 
     function clearForms() {
-        var form = document.forms[0];
+        var form = document.forms.addNewsForm;
         form.elements[0].value = "";
         form.elements[1].value = "";
         form.elements[2].value = "";
@@ -996,13 +1006,116 @@ var fullNewsService = (function () {
     }
 
 }());
+var userService = (function () {
+    var USER_STATUS = false;
+    var CURRENT_USER = {
+        login: '',
+        username: '',
+        password: ''
+    };
+    var USER_BASE = [{
+        login: 'Papech',
+        username: 'Цаль Виталий',
+        password: '5juseuebok5'
+    }];
+    var LOGIN_BUTTON_FORM;
+    var LOGIN_FORM;
+    var LOGIN_BUTTON;
+
+    function init() {
+        LOGIN_BUTTON_FORM = document.querySelector('.top-bar-login');
+        LOGIN_BUTTON_FORM.addEventListener('click', handleClickLoginButton);
+        LOGIN_FORM = document.querySelector('.login-form-wrapper');
+        LOGIN_FORM.style.display = 'none';
+        LOGIN_BUTTON = document.getElementById('login-button');
+        LOGIN_BUTTON = addEventListener('click', handleClickLogin);              //проверка существования пользователя
+    }
+
+    function handleClickLoginButton(event) {
+        var target = event.currentTarget;
+        if (target != this) return;
+        if (getUsername().length === 0) {
+            LOGIN_FORM.style.display = (LOGIN_FORM.style.display === 'none') ? 'block' : 'none';
+        }
+        if (getUsername().length > 0) {
+            var isRemove = confirm('Выйти?');
+            if (isRemove) {
+                CURRENT_USER = {
+                    login: '',
+                    username: '',
+                    password: ''
+                };
+                articleRenderer.showUserElements();
+            }
+        }
+    }
+
+    function handleClickLogin(event) {
+        var target = event.target;
+        if (target.type !== 'button') return;
+        var data = collectData();
+        if (validateUser(data[0], data[1])) {
+            USER_STATUS = true;
+            articleRenderer.showUserElements();
+            LOGIN_FORM.style.display = 'none';
+            clearForm();
+        }
+        else {
+            alert('Неверное имя пользователя или пароль');
+        }
+
+    }
+
+    function getUserStatus() {
+        return USER_STATUS;
+    }
+
+    function getUsername() {
+        return CURRENT_USER.username;
+    }
+
+    function collectData() {
+        var form = document.getElementById('login-form');
+        var data = [];
+        data.push(form.elements[0].value);
+        data.push(form.elements[1].value);
+        return data;
+
+    }
+
+    function clearForm() {
+        var form = document.getElementById('login-form');
+        form.elements[0].value = "";
+        form.elements[1].value = "";
+    }
+
+    function validateUser(login, password) {
+        let findUser = USER_BASE.find(function (item) {
+            return item.login === login;
+        });
+        if (findUser) {
+            if (findUser.password === password) {
+                USER_STATUS = true;
+                CURRENT_USER = findUser;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    return {
+        init: init,
+        getUserStatus: getUserStatus,
+        getUsername: getUsername
+    }
+}());
 document.addEventListener('DOMContentLoaded', startApp);
 
 
 function startApp() {
 
     articleRenderer.init();
-    articleRenderer.showUserElements();
+
 
     var articlesTop = articlesService.getArticles(0, 3);
 
@@ -1013,7 +1126,8 @@ function startApp() {
     });
     renderArticles(paginationParams.skip, paginationParams.top, undefined, 'bot');
     fullNewsService.init();
-
+    articleRenderer.showUserElements();
+    userService.init();
 }
 
 
