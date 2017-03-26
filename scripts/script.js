@@ -1053,17 +1053,18 @@ var userService = (function () {
     function handleClickLogin(event) {
         var target = event.target;
         if (target.type !== 'button') return;
-        var data = collectData();
-        if (validateUser(data[0], data[1])) {
-            USER_STATUS = true;
-            articleRenderer.showUserElements();
-            LOGIN_FORM.style.display = 'none';
-            clearForm();
+        if(target.id==='login-button') {
+            var data = collectData();
+            if (validateUser(data[0], data[1])) {
+                USER_STATUS = true;
+                articleRenderer.showUserElements();
+                LOGIN_FORM.style.display = 'none';
+                clearForm();
+            }
+            else {
+                alert('Неверное имя пользователя или пароль');
+            }
         }
-        else {
-            alert('Неверное имя пользователя или пароль');
-        }
-
     }
 
     function getUserStatus() {
