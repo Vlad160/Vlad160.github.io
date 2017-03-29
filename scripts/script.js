@@ -466,11 +466,10 @@ var articlesService = (function () {
     }
 
     function validateArticle(article) {
-        if (article !== undefined) {
-            var check = Object.keys(articleMap).every(function (item) {
+        if (article) {
+            return Object.keys(articleMap).every(function (item) {
                 return articleMap[item](article[item]);
             });
-            return check;
         }
         return false;
 
@@ -1158,13 +1157,8 @@ var filter = (function () {
             filterConfig.author = authorSelect.value
         }
         var tagsSelect = form.elements.tags;
-        if (tagsSelect.value === 'Все') {
-            filterConfig.tags = undefined;
-        }
-        else {
-            filterConfig.tags.push(tagsSelect.value);                                                   //createdAtFrom: new Date(),
+        filterConfig.tags = customInput.getSelected();                                                   //createdAtFrom: new Date(),
                                                                                                         // createdAtTo: new Date(),
-        }
         var dateFrom = form.elements.date_from;
         if (dateFrom.value) {
             filterConfig['createdAtFrom'] = new Date(dateFrom.value);
