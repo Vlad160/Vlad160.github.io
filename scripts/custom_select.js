@@ -47,6 +47,17 @@ function customInput () {
         return SELECTED;
 
     }
+    function reload(items) {
+        DROPDOWN_MENU.innerHTML = '';
+        addItems(items);
+    }
+    function setSelected(items) {
+       for(let i =0;i<items.length;i++){
+           let item = createOption(items[i]);
+           INPUT_MENU.appendChild(item.cloneNode(true));
+           SELECTED.push(items[i]);
+       }
+    }
     document.addEventListener('click', function (e) {
         let container = CUSTOM_INPUT;
         if (container.getElementsByClassName(e.target.classList).length === 0) {
@@ -58,6 +69,8 @@ function customInput () {
 
     return {
         init: init,
-        getSelected:getSelected
+        getSelected:getSelected,
+        reload:reload,
+        setSelected,setSelected
     }
-};
+}
