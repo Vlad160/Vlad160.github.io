@@ -589,18 +589,17 @@ body {
     float: right;
     position: relative;
     margin: 0;
-    top:-17px;
+    top:-7px;
     left: -5px;
 }
 .author-filter-container{
-    height: 30px;
-    position: relative;
-    top: -10px;
+    margin: 5px;
+    height: auto;
     width: auto;
-    text-align: center;
     display: inline-block;
 }
 .filter-tags-container{
+    margin: 5px;
     height: auto;
     width: auto;
     display: inline-block;

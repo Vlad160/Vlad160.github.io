@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="css/slider.css">
     <link rel="stylesheet" href="css/custom_select_ui.css">
+    <script src="scripts/custom_select.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -43,21 +44,28 @@
     <div class="middle">
         <div class="filter-box">
             <form name="filter">
-                <div class="author-filter-container"><div class="filter-item filter-author">Сортировать по автору:</div>
-                    <select name="author">
-                    </select></div>
+                <div class="author-filter-container">
+                    <div class="filter-item filter-author">Автор:
+                    </div>
+                    <div class="custom-input" id="author-filter">
+                        <div class="input" contentEditable="false" data-text="Выберите авторов"></div>
+                        <div class="block-container">
+                        </div>
+                    </div>
+                </div>
                 <div class="filter-tags-container">
                     <div class="filter-item filter-tags">Теги:</div>
-                    <div class="custom-input">
+                    <div class="custom-input" id="tags-filter">
                         <div class="input" contentEditable="false" data-text="Выберите теги"></div>
                         <div class="block-container">
                         </div>
                     </div>
                 </div>
                 <div class="date-filter-container">
-                    <div class="filter-item filter-date">Фильтр по дате: от: <input name="date_from" type="date"/> до:
-                        <input name="date_to" type="date"/></div></div>
-
+                    <div class="filter-item filter-date">Фильтр по дате: от: <input name="date_from" type="date"/>
+                        до:
+                        <input name="date_to" type="date"/></div>
+                </div>
                 <button type="button" class="flat-button add-filter" id="add-filter" name="filterButton">Искать
                 </button>
             </form>
@@ -146,7 +154,7 @@
         <div class="news-tag">Тег новости</div>
         <div class="news-picture-big">
             <a href="http://www.google.com">
-                <img src="картинка" id="big-image">
+                <img src="" id="big-image">
             </a>
         </div>
         <div class="news-header-big">
@@ -171,7 +179,7 @@
     <div class="bottom-news-wrapper" data-id="id">
         <div class="news-picture-small">
             <a>
-                <img src="Картинка" id="small-image">
+                <img src="" id="small-image">
             </a></div>
         <div class="small-news">
             <div class="news-header-small">
@@ -231,6 +239,4 @@
 <!--scripts-->
 <script src="scripts/slider.js" async></script>
 <script src="scripts/script.js"></script>
-<script src="scripts/custom_select.js"></script>
-
 </html>

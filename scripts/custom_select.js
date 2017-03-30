@@ -1,17 +1,16 @@
-var customInput = (function () {
-    let INPUT;
+function customInput () {
     let INPUT_MENU;
     let DROPDOWN_MENU;
     let CUSTOM_INPUT;
     let SELECTED = [];
-    function init(items) {
-        INPUT = document.getElementsByName('tagsInput');
-        INPUT_MENU = document.querySelector('.input');
-        CUSTOM_INPUT = document.querySelector('.custom-input');
+    function init(items,id) {
+        CUSTOM_INPUT = document.getElementById(id);
+        INPUT_MENU = CUSTOM_INPUT.querySelector('.input');
         INPUT_MENU.addEventListener('click', handleClick);
-        DROPDOWN_MENU = document.querySelector('.block-container');
+        DROPDOWN_MENU = CUSTOM_INPUT.querySelector('.block-container');
         DROPDOWN_MENU.addEventListener('click', handleClickOnBlock);
         addItems(items);
+        return this;
     }
     function addItems(items) {
         items.forEach(function (item) {
@@ -58,7 +57,7 @@ var customInput = (function () {
     });
 
     return {
-        init: init(articlesService.getTags()),
+        init: init,
         getSelected:getSelected
     }
-}());
+};
