@@ -395,11 +395,17 @@ var articlesService = (function () {
             });
             articles = tempArticles;
         }
+        if(localStorage.getItem("tags")){
+            var tempTags = JSON.parse(localStorage.getItem("tags"));
+            tags = tempTags;
+        }
     }
 
     function saveDataToLocalStorage() {
         localStorage.removeItem("articles");
         localStorage.setItem("articles", JSON.stringify(articles));
+        localStorage.removeItem("tags");
+        localStorage.setItem("tags", JSON.stringify(tags));
     }
 
     function filterArticles(articles, filterConfig) {
@@ -904,7 +910,7 @@ var fullNewsService = (function () {
         }
         EDIT_ID = node.getAttribute('data-id');
         openEditAdd(EDIT_ID);
-        TAGS_EDIT = customInput().init(articlesService.getTags(),'add-edit-tags');
+        TAGS_EDIT = customInput().init(articlesService.getTags(),'add-edit-tags',true);
         TAGS_EDIT.setSelected(articlesService.getArticle(EDIT_ID).tags);
         removeAddEditForm();
         contentArea = document.getElementById('add-content-field');
@@ -938,6 +944,12 @@ var fullNewsService = (function () {
         addArticle['summary'] = form.elements[2].value;
         addArticle['content'] = form.elements[3].value;
         addArticle['tags'] = TAGS_EDIT.getSelected();
+        var newTags = TAGS_EDIT.getNew();
+        if(newTags.length>0){
+            newTags.forEach(function (item) {
+                articlesService.addTag(item);
+            })
+        }
         return addArticle;
     }
 
@@ -994,7 +1006,7 @@ var fullNewsService = (function () {
         contentArea.addEventListener('keydown', handleContentResize);
         submitButton = document.getElementById('add-news-submit');
         submitButton.addEventListener('click', handleAddNewsSubmit);
-        TAGS_EDIT = customInput().init(articlesService.getTags(),'add-edit-tags');
+        TAGS_EDIT = customInput().init(articlesService.getTags(),'add-edit-tags',true);
     }
 
     function handleContentResize() {
@@ -1021,7 +1033,6 @@ var fullNewsService = (function () {
 
     function handleAddNewsSubmit() {
         var article = collectData();
-        article['tags'] = TAGS_EDIT.getSelected();
         if (articlesService.validateArticle(article)) {
             articlesService.addArticle(article);
             articleRenderer.insertArticleInDOM(article, 'top');
